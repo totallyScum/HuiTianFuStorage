@@ -310,6 +310,7 @@ public class DbUtils {
         //  List<Log> logQueryBuilder = qb.where(LogDao.Properties.StorageTime.ge(start),LogDao.Properties.FetchTime.le(end)).list();
         // Log log=new Log(userID,, int userId,  status,date,
         // Date storageTime)
+        daoSession.insert(log);
         return true;
     }
 
@@ -487,8 +488,8 @@ public class DbUtils {
         if (upt==null)
         {
             startTimeAM = new Date();
-            startTimeAM.setHours(MyApplication.endTimeAM.getHours());
-            startTimeAM.setMinutes(MyApplication.endTimeAM.getMinutes());
+            startTimeAM.setHours(MyApplication.startTimeAM.getHours());
+            startTimeAM.setMinutes(MyApplication.startTimeAM.getMinutes());
 
 
             endTimeAM=new Date();
@@ -791,7 +792,10 @@ public class DbUtils {
                     DayLogBean temp = dayLogBeans.get(i);
 
                     try {
-                        temp.setRemark(temp.getRemark() + "|" + log.getRemark());
+                        if (temp.getRemark()=="null")
+                            temp.setRemark(log.getRemark());
+                        else
+                            temp.setRemark(temp.getRemark()+"|"+log.getRemark());
                         dayLogBeans.set(i, temp);
                     } catch (Exception e) {
                         e.printStackTrace();

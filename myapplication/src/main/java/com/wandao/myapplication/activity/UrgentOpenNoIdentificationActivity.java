@@ -67,7 +67,7 @@ public class UrgentOpenNoIdentificationActivity extends BaseActivity implements 
 //            if (position>=20)
 //                boxService.lockControlOpenDoor(Byte.valueOf(((position-20)+1+"")), Byte.valueOf(15 + ""));
 
-            DoorUtils.getSingleton().openDoor(position + 1);   //银华开门方式
+            DoorUtils.getSingleton().openDoor(position + 1,getApplicationContext());   //银华开门方式
 
             DbUtils.changeBoxStatus(0,DbUtils.queryBox(position+1),new Date().getTime());            //柜门状态改变，标记为空
         } catch (Exception e) {

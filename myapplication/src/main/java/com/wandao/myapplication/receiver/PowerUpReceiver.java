@@ -16,7 +16,7 @@ final Context context1=context;
             public void run() {
                 super.run();
                 try {
-                    Thread.sleep(10000);//休眠10秒
+                    Thread.sleep(5000);//休眠5秒
                     Intent intent1=new Intent(context1, MainActivity.class);
                     context1.startActivity(intent1);
                 } catch (InterruptedException e) {

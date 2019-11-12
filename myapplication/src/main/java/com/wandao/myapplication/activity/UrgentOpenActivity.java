@@ -108,7 +108,7 @@ public class UrgentOpenActivity extends BaseActivity implements AdapterView.OnIt
 //                boxService.lockControlOpenDoor(Byte.valueOf((users.get(position).getBoxId()-20) + ""), Byte.valueOf(15 + ""));
 
 
-            DoorUtils.getSingleton().openDoor(users.get(position).getBoxId());   //银华开门方式
+            DoorUtils.getSingleton().openDoor(users.get(position).getBoxId(),getApplicationContext());   //银华开门方式
 
 
             logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");

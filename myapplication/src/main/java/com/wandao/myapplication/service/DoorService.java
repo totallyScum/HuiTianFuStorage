@@ -72,10 +72,10 @@ public class DoorService extends Service {
             @Override
             public void run() {
 
-                boolean open = false;
-                int i = DoorUtils.getSingleton().checkDoorStatus();
-                if (i != 0)
-                    open = true;
+  //              boolean open = false;
+          DoorUtils.getSingleton().checkDoorStatus(getApplicationContext());
+//                if (i != 0)
+//                    open = true;
 //                for (int i = 0; i < LockController.doorStatus.length; i++) {
 //                    if (LockController.doorStatus[i] != 1) {
 //                        open20=true;
@@ -90,19 +90,18 @@ public class DoorService extends Service {
 ////                        });
 //                    }
 //                }     //循环判断锁板1的状态，返回值
-                if (i == 0) {
-                    intent.putExtra("count", 0);
-                    intent.setAction("com.wandao.myapplication");
-                    sendBroadcast(intent);
-                }
-                //     if (i!=0&&open==true){
-                if (i != 0) {
-                    Intent intent = new Intent();
-                    intent.putExtra("count", i);
-                    intent.setAction("com.wandao.myapplication");
-                    sendBroadcast(intent);
-
-                }
+//                if (i == 0) {
+//                    intent.putExtra("count", 0);
+//                    intent.setAction("com.wandao.myapplication");
+//                    sendBroadcast(intent);
+//                }
+//                //     if (i!=0&&open==true){
+//                if (i != 0) {
+//                    Intent intent = new Intent();
+//                    intent.putExtra("count", i);
+//                    intent.setAction("com.wandao.myapplication");
+//                    sendBroadcast(intent);
+//                }
             }
 
 //                if (DbUtils.getDoorNumber() == 40) {
@@ -142,7 +141,7 @@ public class DoorService extends Service {
 //                    open=false;
 //                    }     //循环判断锁板2的状态，返回值
         };
-        timer.schedule(timerTask, 0, 1000);
+        timer.schedule(timerTask, 0, 4000);
     }
 
     public static boolean checkFloatPermission(Context context) {

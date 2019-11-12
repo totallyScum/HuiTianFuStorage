@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = E:\Android\Sdk\cmake\3.6.4111459\bin\cmake.exe -HE:\AndroidStudioProjects\YinHuaStorage\iminect -BE:\AndroidStudioProjects\YinHuaStorage\iminect\.cxx\cmake\debug\armeabi-v7a
+  command = E:\Android\Sdk\cmake\3.6.4111459\bin\cmake.exe -HE:\AndroidStudioProjects\HuiTianFuStorage\iminect -BE:\AndroidStudioProjects\HuiTianFuStorage\iminect\.cxx\cmake\debug\armeabi-v7a
   description = Re-running CMake...
   generator = 1
 

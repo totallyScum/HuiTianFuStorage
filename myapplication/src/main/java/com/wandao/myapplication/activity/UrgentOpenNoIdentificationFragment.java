@@ -167,13 +167,13 @@ public class UrgentOpenNoIdentificationFragment extends Fragment implements Adap
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-        showBoxDialog(i);
+        showBoxDialog(i+1);
 
     }
 
 
     private void showBoxDialog(int doorNumber) {
-        Box box = DbUtils.queryBox(doorNumber + 1);
+        Box box = DbUtils.queryBox(doorNumber);
         builder = new AlertDialog.Builder(getContext()).setIcon(R.mipmap.ic_launcher).setTitle("柜门设置")
                 .setItems(boxTitle, new DialogInterface.OnClickListener() {
                     @Override
@@ -181,9 +181,7 @@ public class UrgentOpenNoIdentificationFragment extends Fragment implements Adap
                         switch (i) {
                             case 0:
                                 try {
-
-
-                                    DoorUtils.getSingleton().openDoor(doorNumber);   //银华开门方式
+                                    DoorUtils.getSingleton().openDoor(doorNumber,getContext());   //银华开门方式
 //                                    if (doorNumber < 20)
 //                                        boxService.lockControlOpenDoor(Byte.valueOf(doorNumber + 1 + ""), Byte.valueOf(0 + ""));
 //                                    if (doorNumber >= 20)

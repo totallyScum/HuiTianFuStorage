@@ -25,18 +25,17 @@
     <application
         android:name=".activity.MyApplication"
         android:allowBackup="true"
+        android:debuggable="true"
         android:icon="@mipmap/launcher_wandao"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/launcher_wandao"
         android:supportsRtl="true"
-        android:debuggable="true"
         tools:ignore="HardcodedDebugMode">
-        <activity android:name=".MenuActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            >
 
-        </activity>
+        <activity
+            android:name=".MenuActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></activity>
         <activity
             android:name=".activity.UserTimeSettingActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
@@ -53,20 +52,16 @@
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".activity.SettingActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"></activity>
         <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".activity.PassActivity" />
         <activity android:name="com.baidu.idl.sample.ui.LicenseActivity" />
@@ -80,14 +75,17 @@
         <activity android:name=".activity.ImageDetailActivity" />
         <activity android:name="com.baidu.idl.sample.ui.ImageDetailActivity" />
         <activity android:name=".activity.RegisterActivity" />
-        <activity android:name=".activity.LicenseActivity" >
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
+        <activity android:name=".activity.LicenseActivity">
 
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".activity.BatchImportActivity" />
+
         <service android:name=".service.DoorService" />
         <service android:name=".service.SendEmailService" />
         <service android:name=".service.ServerService" />
@@ -98,6 +96,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".broadcastReceiver.DoorReceiver">
+            <intent-filter>
+                <action android:name="com.hzjubu.action.ACK_DOORS_STATUS" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

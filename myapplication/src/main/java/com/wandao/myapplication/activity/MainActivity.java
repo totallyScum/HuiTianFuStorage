@@ -189,12 +189,11 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
       //  initBanner();
         initActivity();
      //   initLicence();
-        DbUtils.initBoxNumber(60);
+     //   DbUtils.initBoxNumber(60);
 //        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
 //        intent.setData(Uri.parse("package:" + getPackageName()));
 //        startActivityForResult(intent,100);
         //注册广播接收器
-
         requestOverlayPermission();
     }
 
@@ -218,10 +217,8 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                 count = 0;
             //         doorStatus.add(count);
             Log.d("wwweeee66", count + "");
-
             if (count == 0) {
                 //      doorStatus.clear();
-
                 if (parentView != null && windowManager != null) {
                     if (parentView.getParent() != null)
                         windowManager.removeView(parentView);
@@ -289,9 +286,6 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         } else {
             Log.d("boxService", "null");
         }
-
-
-
         //      Intent AlarmIntent = new Intent(MainActivity.this, SendEmailService.class);
         //      startService(AlarmIntent);
         //bindService(intent,serviceConnection, Service.BIND_AUTO_CREATE);
@@ -451,6 +445,9 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.wandao.myapplication");
         MainActivity.this.registerReceiver(receiver, filter);
+
+
+
 
 
     }
@@ -685,8 +682,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 //                                boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
 //                            if (currentBox.getBoxId()>20)
 //                                boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
-
-                            DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""));   //银华开门方式
+                            DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
 
 //                            Toast.makeText(this, "当前不是可取手机时间！", LENGTH_LONG).show();
                             DbUtils.storageLog(DbUtils.checkStorageStatus(new Date(),currentUser.getId()), new Date(), currentUser.getId());    //记录存柜事件
@@ -716,16 +712,16 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                             currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
                             doorAdapter.notifyDataSetChanged();
 
-                            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-                            logRequestBody.setLogID("2019093001");
-                            logRequestBody.setDoorID(currentUser.getBoxId() + "");
-                            logRequestBody.setUserID(currentUser.getId() + "");
-                            logRequestBody.setUserName(currentUser.getName());
-                            logRequestBody.setDepsName(currentUser.getDepartment());
-                            logRequestBody.setStatus("0");
-                            logRequestBody.setTime(new Date().getTime());
-                            logRequestBody.setActionUserName(currentUser.getName());
-                            presenter.putLogRequest(logRequestBody);
+//                            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+//                            logRequestBody.setLogID("2019093001");
+//                            logRequestBody.setDoorID(currentUser.getBoxId() + "");
+//                            logRequestBody.setUserID(currentUser.getId() + "");
+//                            logRequestBody.setUserName(currentUser.getName());
+//                            logRequestBody.setDepsName(currentUser.getDepartment());
+//                            logRequestBody.setStatus("0");
+//                            logRequestBody.setTime(new Date().getTime());
+//                            logRequestBody.setActionUserName(currentUser.getName());
+//                            presenter.putLogRequest(logRequestBody);
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(this, e.toString(), LENGTH_LONG).show();
@@ -753,22 +749,22 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 ////                                if (currentBox.getBoxId()>20)
 ////                                    boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
 
-                                DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""));   //银华开门方式
+                                DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
 
 
                                 //开门指令
                                 DbUtils.storageLog(1, new Date(), currentUser.getId());
                                 DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());            //柜门状态改变，标记为空
-                                logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-                                logRequestBody.setLogID("2019093001");
-                                logRequestBody.setDoorID(currentUser.getBoxId() + "");
-                                logRequestBody.setUserID(currentUser.getId() + "");
-                                logRequestBody.setUserName(currentUser.getName());
-                                logRequestBody.setDepsName(currentUser.getDepartment());
-                                logRequestBody.setStatus("1");
-                                logRequestBody.setTime(new Date().getTime());
-                                logRequestBody.setActionUserName(currentUser.getName());
-                                presenter.putLogRequest(logRequestBody);
+//                                logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+//                                logRequestBody.setLogID("2019093001");
+//                                logRequestBody.setDoorID(currentUser.getBoxId() + "");
+//                                logRequestBody.setUserID(currentUser.getId() + "");
+//                                logRequestBody.setUserName(currentUser.getName());
+//                                logRequestBody.setDepsName(currentUser.getDepartment());
+//                                logRequestBody.setStatus("1");
+//                                logRequestBody.setTime(new Date().getTime());
+//                                logRequestBody.setActionUserName(currentUser.getName());
+//                                presenter.putLogRequest(logRequestBody);
                                 currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
                                 doorAdapter.notifyDataSetChanged();
                             } catch (Exception e) {
