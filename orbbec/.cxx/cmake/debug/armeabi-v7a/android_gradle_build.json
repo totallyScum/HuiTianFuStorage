@@ -1,9 +1,9 @@
 
 {
-	"buildFiles" : [ "E:/AndroidStudioProjects/HuiTianFuStorage/orbbec/CMakeLists.txt" ],
+	"buildFiles" : [ "D:/AndroidStudioProjects/HuiTianFuStorage/orbbec/CMakeLists.txt" ],
 	"cleanCommands" : 
 	[
-		"E:\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build E:\\AndroidStudioProjects\\HuiTianFuStorage\\orbbec\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
+		"D:\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\HuiTianFuStorage\\orbbec\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
 	],
 	"cppFileExtensions" : [ "cpp" ],
 	"libraries" : 
@@ -12,27 +12,27 @@
 		{
 			"abi" : "armeabi-v7a",
 			"artifactName" : "DepthUtils",
-			"buildCommand" : "E:\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build E:\\AndroidStudioProjects\\HuiTianFuStorage\\orbbec\\.cxx\\cmake\\debug\\armeabi-v7a --target DepthUtils",
+			"buildCommand" : "D:\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\HuiTianFuStorage\\orbbec\\.cxx\\cmake\\debug\\armeabi-v7a --target DepthUtils",
 			"buildType" : "debug",
 			"files" : 
 			[
 				
 				{
-					"flags" : "  --target=armv7-none-linux-androideabi16 --gcc-toolchain=E:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=E:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -DDepthUtils_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -frtti -fexceptions -fPIC -O0 -fno-limit-debug-info  -fPIC   -std=c++11  -c ",
-					"src" : "E:/AndroidStudioProjects/HuiTianFuStorage/orbbec/src/main/cpp/DepthUtils.cpp",
-					"workingDirectory" : "E:/AndroidStudioProjects/HuiTianFuStorage/orbbec/.cxx/cmake/debug/armeabi-v7a"
+					"flags" : "  --target=armv7-none-linux-androideabi16 --gcc-toolchain=D:/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=D:/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -DDepthUtils_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -frtti -fexceptions -fPIC -O0 -fno-limit-debug-info  -fPIC   -std=c++11  -c ",
+					"src" : "D:/AndroidStudioProjects/HuiTianFuStorage/orbbec/src/main/cpp/DepthUtils.cpp",
+					"workingDirectory" : "D:/AndroidStudioProjects/HuiTianFuStorage/orbbec/.cxx/cmake/debug/armeabi-v7a"
 				}
 			],
-			"output" : "E:/AndroidStudioProjects/HuiTianFuStorage/orbbec/build/intermediates/cmake/debug/obj/armeabi-v7a/libDepthUtils.so",
-			"toolchain" : "2259502793"
+			"output" : "D:/AndroidStudioProjects/HuiTianFuStorage/orbbec/build/intermediates/cmake/debug/obj/armeabi-v7a/libDepthUtils.so",
+			"toolchain" : "41705997"
 		}
 	},
 	"toolchains" : 
 	{
-		"2259502793" : 
+		"41705997" : 
 		{
-			"cCompilerExecutable" : "E:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
-			"cppCompilerExecutable" : "E:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+			"cCompilerExecutable" : "D:/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "D:/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
 		}
 	}
 }
