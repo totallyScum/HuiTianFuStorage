@@ -147,6 +147,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
     private static WindowManager windowManager;
     private static View parentView;
     private static List<Integer> doorStatus = new ArrayList<>();
+    private static long lastSecondClickTime;
     private  Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -208,6 +209,8 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
     }
 
 
+
+
     public class MyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -257,6 +260,10 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 
 
 
+
+
+
+
     public void initActivity() {
         mContext = this;
         mCameraView = findViewById(R.id.layout_camera);
@@ -271,8 +278,87 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         mRecyclerView = (RecyclerView) findViewById(R.id.status_recyclerView);
         lockScreenImage=findViewById(R.id.lock_screen_image);
         mUrgentButton.setOnTouchListener(this);
-        mOpenButton.setOnTouchListener(this);
-        mLockButton.setOnTouchListener(this);
+        mOpenButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentUser == null) {
+                    Toast.makeText(getApplicationContext(), "非本公司人员请勿操作！", LENGTH_LONG).show();
+                } else
+                    if(isFastClickInSecond()){
+
+                        if (currentBox.getStatus() == 1&&currentBox.getBoxId()!=0) {
+                            Toast.makeText(getApplicationContext(), "请勿重复进行存操作！", LENGTH_LONG).show();
+                        }
+
+                    if (currentBox.getStatus() == 0&&currentBox.getBoxId()!=0) {
+                        try {
+                            //     boxService.lockControlOpenDoor(Byte.valueOf(1+""), Byte.valueOf(0 + ""));
+                            if (DbUtils.checkStorageStatus(new Date(), currentUser.getId()) == 2) {
+                                showLateWindow(getApplicationContext(), currentUser.getId());
+                            }
+                        DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());
+
+                               currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+                               DbUtils.storageLog(DbUtils.checkStorageStatus(new Date(),currentUser.getId()), new Date(), currentUser.getId());    //记录存柜事件
+                               DbUtils.changeBoxStatus(1, currentBox, new Date().getTime());            //柜门状态改变，标记为非空doorAdapter.notifyDataSetChanged();
+                               //银华开门方式
+                            doorAdapter.notifyDataSetChanged();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), e.toString(), LENGTH_LONG).show();
+                        }
+                    }
+
+                    if (currentBox.getBoxId()==0)
+                    {
+                        Toast.makeText(getApplicationContext(), "当前用户为管理员用户！", LENGTH_LONG).show();
+                    }
+
+                }
+            }
+        });
+        mLockButton.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                    if (currentUser == null) {
+                    } else {
+                        if (currentBox.getStatus() == 1&& isFastClickInSecond()) {
+                            if (booleanFetch(getApplicationContext(),currentUser)) {          //判断当前是否是取件时间
+                                try {
+//                                if (currentBox.getBoxId()<=20)
+////                                    boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
+////                                if (currentBox.getBoxId()>20)
+////                                    boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
+                                 DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
+                                     currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+                                     DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());
+                                     DbUtils.storageLog(1, new Date(), currentUser.getId());
+                                     //开门指令
+                                //柜门状态改变，标记为空
+                                     doorAdapter.notifyDataSetChanged();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                //              Toast.makeText(this, "当前是工作时间", LENGTH_LONG).show();
+                                try{
+                                    currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+                                    if (DbUtils.checkFetchStatus(new Date(), currentUser.getId()) == 1) {
+                                        Toast.makeText(getApplicationContext(), "当前是工作时间", LENGTH_LONG).show();
+                                        showFetchWindow(getApplicationContext(),currentUser.getId());
+                                    }
+                                }catch (Exception e){
+                                    Toast.makeText(getApplicationContext(), "异常错误"+e.toString(), LENGTH_LONG).show();
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "柜中没有放置物品", LENGTH_LONG).show();
+                        }
+                    }
+            }
+        });
         calculateCameraView();
 
 
@@ -291,9 +377,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         //bindService(intent,serviceConnection, Service.BIND_AUTO_CREATE);
 
 //设置adapter
-
      //   initData();
-
         // 创建一个message对象
         new Thread(new Runnable() {
             @Override
@@ -304,8 +388,6 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                 handler.sendMessage(msg);
             }
         }).start();
-
-
         serverPresenter = new ServerPresenter(this, new OnServerChangeListener() {
             @Override
             public void onServerStarted(String ipAddress) {
@@ -391,7 +473,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         }
     }
     /**
-     * 计算并适配显示图像容器的宽高
+     * 计算并适配显示图像容器的宽高F
      */
     private void calculateCameraView() {
         String newPix;
@@ -447,9 +529,10 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         MainActivity.this.registerReceiver(receiver, filter);
 
 
-
-
-
+        MyReceiver dReceiver = new MyReceiver();
+        IntentFilter dFilter = new IntentFilter();
+        filter.addAction("com.chen.bOpen");
+        MainActivity.this.registerReceiver(dReceiver, dFilter);
     }
 
     private void initData() {
@@ -650,8 +733,8 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-
-        switch (view.getId()) {
+        super.onTouchEvent(motionEvent);
+            switch (view.getId()) {
             case R.id.urgent_button: {
                 if (currentUser == null) {
                     break;
@@ -670,115 +753,121 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                 }
             }
             case R.id.open_button: {       //存柜
-                if (currentUser == null) {
-                    Toast.makeText(this, "非本公司人员请勿操作！", LENGTH_LONG).show();
-                    break;
-                } else {
-                    if (currentBox.getStatus() == 0&&currentBox.getBoxId()!=0) {
-                        try {
-                            //     boxService.lockControlOpenDoor(Byte.valueOf(1+""), Byte.valueOf(0 + ""));
-                            Log.d("getBoxId", currentBox.getBoxId() + "");
-//                            if (currentBox.getBoxId()<=20)
-//                                boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
-//                            if (currentBox.getBoxId()>20)
-//                                boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
-                            DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
-
-//                            Toast.makeText(this, "当前不是可取手机时间！", LENGTH_LONG).show();
-                            DbUtils.storageLog(DbUtils.checkStorageStatus(new Date(),currentUser.getId()), new Date(), currentUser.getId());    //记录存柜事件
-                            DbUtils.changeBoxStatus(1, currentBox, new Date().getTime());            //柜门状态改变，标记为非空
-
-                            Log.d("2222222zxxxcvx", DbUtils.checkStorageStatus(new Date(), currentUser.getId()) + "");
-
-                            if (DbUtils.checkStorageStatus(new Date(), currentUser.getId()) == 2) {
-                                showLateWindow(getApplicationContext(), currentUser.getId());
-                                Log.d("2222222zxxxcvx", "222333");
-                            }
-
-
-                            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-                            //    logRequestBody.setBoxIp("192.168.3.21");
-                            Log.d("2222222zxxxcvxqq", NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-//                            logRequestBody.setLogID("2019093001");
-//                            logRequestBody.setDoorID(currentBox.getBoxId()+"");
-//                            logRequestBody.setUserID(currentUser.getId()+"");
-//                            logRequestBody.setUserName(currentUser.getName());
-//                            logRequestBody.setDepsName(currentUser.getDepartment());
-//                            logRequestBody.setStatus("0");
-//                            logRequestBody.setTime(Long.parseLong(new Date().toString()));
-//                            logRequestBody.setActionUserName(currentUser.getName());
-//                            Log.d("2222222zxxxcvxqq",logRequestBody.toString());
-
-                            currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
-                            doorAdapter.notifyDataSetChanged();
-
-//                            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-//                            logRequestBody.setLogID("2019093001");
-//                            logRequestBody.setDoorID(currentUser.getBoxId() + "");
-//                            logRequestBody.setUserID(currentUser.getId() + "");
-//                            logRequestBody.setUserName(currentUser.getName());
-//                            logRequestBody.setDepsName(currentUser.getDepartment());
-//                            logRequestBody.setStatus("0");
-//                            logRequestBody.setTime(new Date().getTime());
-//                            logRequestBody.setActionUserName(currentUser.getName());
-//                            presenter.putLogRequest(logRequestBody);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(this, e.toString(), LENGTH_LONG).show();
-                        }
-                    }
-                    if (currentBox.getStatus() == 1&&currentBox.getBoxId()!=0) {
-                        Toast.makeText(this, "请勿重复进行存操作！", LENGTH_LONG).show();
-                    }
-                    if (currentBox.getBoxId()==0)
-                    {
-                        Toast.makeText(this, "当前用户为管理员用户！", LENGTH_LONG).show();
-                    }
-                    break;
-                }
+//                if (currentUser == null) {
+//                    Toast.makeText(this, "非本公司人员请勿操作！", LENGTH_LONG).show();
+//                    break;
+//                } else {
+//                    if (currentBox.getStatus() == 0&&currentBox.getBoxId()!=0) {
+//                        try {
+//                            //     boxService.lockControlOpenDoor(Byte.valueOf(1+""), Byte.valueOf(0 + ""));
+//                            Log.d("getBoxId", currentBox.getBoxId() + "");
+////                            if (currentBox.getBoxId()<=20)
+////                                boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
+////                            if (currentBox.getBoxId()>20)
+////                                boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
+//                            DbUtils.storageLog(DbUtils.checkStorageStatus(new Date(),currentUser.getId()), new Date(), currentUser.getId());    //记录存柜事件
+//                            DbUtils.changeBoxStatus(1, currentBox, new Date().getTime());            //柜门状态改变，标记为非空
+//                            doorAdapter.notifyDataSetChanged();
+//                            DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
+//
+////                            Log.d("2222222zxxxcvx", DbUtils.checkStorageStatus(new Date(), currentUser.getId()) + "");
+//
+//                            if (DbUtils.checkStorageStatus(new Date(), currentUser.getId()) == 2) {
+//                                showLateWindow(getApplicationContext(), currentUser.getId());
+//                                Log.d("2222222zxxxcvx", "222333");
+//                            }
+//                //            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+//                            //    logRequestBody.setBoxIp("192.168.3.21");
+//                 //           Log.d("2222222zxxxcvxqq", NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+////                            logRequestBody.setLogID("2019093001");
+////                            logRequestBody.setDoorID(currentBox.getBoxId()+"");
+////                            logRequestBody.setUserID(currentUser.getId()+"");
+////                            logRequestBody.setUserName(currentUser.getName());
+////                            logRequestBody.setDepsName(currentUser.getDepartment());
+////                            logRequestBody.setStatus("0");
+////                            logRequestBody.setTime(Long.parseLong(new Date().toString()));
+////                            logRequestBody.setActionUserName(currentUser.getName());
+////                            Log.d("2222222zxxxcvxqq",logRequestBody.toString());
+//
+//                            currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+//
+////                            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+////                            logRequestBody.setLogID("2019093001");
+////                            logRequestBody.setDoorID(currentUser.getBoxId() + "");
+////                            logRequestBody.setUserID(currentUser.getId() + "");
+////                            logRequestBody.setUserName(currentUser.getName());
+////                            logRequestBody.setDepsName(currentUser.getDepartment());
+////                            logRequestBody.setStatus("0");
+////                            logRequestBody.setTime(new Date().getTime());
+////                            logRequestBody.setActionUserName(currentUser.getName());
+////                            presenter.putLogRequest(logRequestBody);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            Toast.makeText(this, e.toString(), LENGTH_LONG).show();
+//                        }
+//                    }
+//                    if (currentBox.getStatus() == 1&&currentBox.getBoxId()!=0) {
+//                        Toast.makeText(this, "请勿重复进行存操作！", LENGTH_LONG).show();
+//                    }
+//                    if (currentBox.getBoxId()==0)
+//                    {
+//                        Toast.makeText(this, "当前用户为管理员用户！", LENGTH_LONG).show();
+//                    }
+//
+//                    break;
+//                }
+                break;
             }
-            case R.id.lock_button: {            //取柜
-                if (currentUser == null) {
-                    break;
-                } else {
-                    if (currentBox.getStatus() == 1) {
-                        if (booleanFetch(this,currentUser)) {          //判断当前是否是取件时间
-                            try {
-//                                if (currentBox.getBoxId()<=20)
-////                                    boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
-////                                if (currentBox.getBoxId()>20)
-////                                    boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
-
-                                DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
-
-
-                                //开门指令
-                                DbUtils.storageLog(1, new Date(), currentUser.getId());
-                                DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());            //柜门状态改变，标记为空
-//                                logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-//                                logRequestBody.setLogID("2019093001");
-//                                logRequestBody.setDoorID(currentUser.getBoxId() + "");
-//                                logRequestBody.setUserID(currentUser.getId() + "");
-//                                logRequestBody.setUserName(currentUser.getName());
-//                                logRequestBody.setDepsName(currentUser.getDepartment());
-//                                logRequestBody.setStatus("1");
-//                                logRequestBody.setTime(new Date().getTime());
-//                                logRequestBody.setActionUserName(currentUser.getName());
-//                                presenter.putLogRequest(logRequestBody);
-                                currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
-                                doorAdapter.notifyDataSetChanged();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-
-                        }
-                    } else {
-                        Toast.makeText(this, "柜中没有放置物品", LENGTH_LONG).show();
-                    }
-                    break;
-                }
-            }
+//            case R.id.lock_button: {            //取柜
+//                if (currentUser == null) {
+//                    break;
+//                } else {
+//                    if (currentBox.getStatus() == 1) {
+//                        if (booleanFetch(this,currentUser)) {          //判断当前是否是取件时间
+//                            try {
+////                                if (currentBox.getBoxId()<=20)
+//////                                    boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
+//////                                if (currentBox.getBoxId()>20)
+//////                                    boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
+//
+//                                DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
+//                                //开门指令
+//                                DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());            //柜门状态改变，标记为空
+////                                logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+////                                logRequestBody.setLogID("2019093001");
+////                                logRequestBody.setDoorID(currentUser.getBoxId() + "");
+////                                logRequestBody.setUserID(currentUser.getId() + "");
+////                                logRequestBody.setUserName(currentUser.getName());
+////                                logRequestBody.setDepsName(currentUser.getDepartment());
+////                                logRequestBody.setStatus("1");
+////                                logRequestBody.setTime(new Date().getTime());
+////                                logRequestBody.setActionUserName(currentUser.getName());
+////                                presenter.putLogRequest(logRequestBody);
+//
+//                                currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+//                                doorAdapter.notifyDataSetChanged();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        } else {
+//              //              Toast.makeText(this, "当前是工作时间", LENGTH_LONG).show();
+//                            try{
+//                                currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+//                                if (DbUtils.checkFetchStatus(new Date(), currentUser.getId()) == 1) {
+//                                    Toast.makeText(this, "当前是工作时间", LENGTH_LONG).show();
+//                                    showFetchWindow(getApplicationContext(),currentUser.getId());
+//                                }
+//                            }catch (Exception e){
+//                                Toast.makeText(this, "异常错误"+e.toString(), LENGTH_LONG).show();
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    } else {
+//                        Toast.makeText(this, "柜中没有放置物品", LENGTH_LONG).show();
+//                    }
+//                }
+//
+//            }
 
         }
         return false;
@@ -857,7 +946,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
     }
 
 
-    //显示迟到界面
+    //晚交手机的原因选项
     private void showLateWindow(Context context, Long userID) {
         final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
         builder.setIcon(R.mipmap.main_setting);
@@ -868,20 +957,24 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 //        final EditText password = (EditText) view2.findViewById(R.id.password);
         editSpinner = (EditSpinner) view2.findViewById(R.id.edit_spinner_late);
         List<String> list = new ArrayList<>();
-        list.add("请假");
-        list.add("出差");
-        list.add("迟到");
-        list.add("外出");
+        list.add("晨会");
+        list.add("私塾");
+        list.add("忘交手机");
+        list.add("外出午餐回来");
+        list.add("外出开会/拜访/路演回来");
+        list.add("其他原因(请自行录入)");
         editSpinner.setItemData(list);
-        editSpinner.setMaxLine(3);
+        editSpinner.setMaxLine(5);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (editSpinner.getText() != null)
                     DbUtils.storageExceptionLog(0, new Date(), userID, editSpinner.getText());    //记录晚存
-                else if (editSpinner.getText() == null) {
+                else if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals("") ) {
                     DbUtils.storageExceptionLog(0, new Date(), userID, "用户未选择晚存理由");    //记录晚存
                 }
+  //              doorAdapter.notifyDataSetChanged();
+
             }
         });
 
@@ -901,6 +994,50 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 //                            }});
         if (!isFinishing()) {
             builder.show();
+        }
+    }
+
+
+
+    //交易时间取出手机的原因选项
+    private void showFetchWindow(Context context, Long userID) {
+        final android.app.AlertDialog.Builder builderF = new android.app.AlertDialog.Builder(MainActivity.this);
+        builderF.setIcon(R.mipmap.main_setting);
+        builderF.setTitle("请先关闭柜门");
+        builderF.setCancelable(false);
+        View view2 = LayoutInflater.from(MainActivity.this).inflate(R.layout.late_popup_window, null);
+        builderF.setView(view2);
+//        final EditText password = (EditText) view2.findViewById(R.id.password);
+        editSpinner = (EditSpinner) view2.findViewById(R.id.edit_spinner_late);
+        List<String> list = new ArrayList<>();
+        list.add("上海本地外出开会/拜访/路演");
+        list.add("出差");
+        list.add("临时紧急电话/短信/调为静音");
+        list.add("其他原因(请自行录入)");
+        editSpinner.setItemData(list);
+        editSpinner.setMaxLine(3);
+        builderF.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //汇添富开门方式
+                DbUtils.storageLogUrgent(3, new Date(),currentUser.getId(),currentUser.getName());
+                DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());            //柜门状态改变，标记为非空
+                if (editSpinner.getText() != null)
+                    DbUtils.storageExceptionLog(1, new Date(), userID, editSpinner.getText());    //记录晚存
+                else if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals("")){
+                    DbUtils.storageExceptionLog(1, new Date(), userID, "未输入早取理由");    //记录晚存
+                }
+                doorAdapter.notifyDataSetChanged();
+
+
+            }
+        });
+        if (!isFinishing()) {
+
+            Toast.makeText(this, "取柜界面显示", LENGTH_LONG).show();
+
+
+            builderF.show();
         }
     }
 
@@ -961,6 +1098,8 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    if(currentUser==null)
                     mCameraView.setVisibility(View.INVISIBLE);
                 }
             }, 1000*3);
@@ -1016,7 +1155,15 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
             }
         }
     }
+    public static boolean isFastClickInSecond() {
+        if (System.currentTimeMillis() - lastSecondClickTime >= 3000) {
+            lastSecondClickTime = System.currentTimeMillis();
+            return true;
+        } else {
+            return false;
+        }
 
+    }
 
 }
 

@@ -100,6 +100,7 @@
         <receiver android:name=".broadcastReceiver.DoorReceiver">
             <intent-filter>
                 <action android:name="com.hzjubu.action.ACK_DOORS_STATUS" />
+                <action android:name="com.hzjubu.action.ACK_OPEN_DOOR" />
             </intent-filter>
         </receiver>
 

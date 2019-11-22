@@ -165,6 +165,7 @@ public class EditSpinner extends RelativeLayout implements View.OnClickListener,
                 mRightIv.startAnimation(mResetAnimation);
             }
         });
+
     }
 
 

@@ -166,12 +166,11 @@ public class UrgentOpenActivity extends BaseActivity implements AdapterView.OnIt
 //        final EditText password = (EditText) view2.findViewById(R.id.password);
         editSpinner = (EditSpinner) view2.findViewById(R.id.edit_spinner_late);
         List<String> list = new ArrayList<>();
-        list.add("请假");
-        list.add("出差");
-        list.add("开会");
-        list.add("外出");
+        list.add("上海本地外出开会");
+        list.add("上海本地外出拜访");
+        list.add("临时紧急电话/短信");
         editSpinner.setItemData(list);
-        editSpinner.setMaxLine(3);
+        editSpinner.setMaxLine(2);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

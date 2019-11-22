@@ -87,7 +87,6 @@ public class DayLogBean {
     public String getRemark() {
         return remark;
     }
-
     public void setRemark(String remark) {
         this.remark = remark;
     }

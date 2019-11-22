@@ -10,7 +10,7 @@ public class ExceptionLog {
     Long logId;                 //日志id
     int boxId;             //箱子ID
     long userId;             //用户工号
-    int status;         //标记动作状态    1迟到 2早退 3没关柜门
+    int status;         //标记动作状态    0迟到 1早退
     long time;   //取件时间
     String remark;   //行为记录
     @Generated(hash = 1632668876)

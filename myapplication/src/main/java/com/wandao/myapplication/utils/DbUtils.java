@@ -38,6 +38,7 @@ public class DbUtils {
     static DateFormat format2 = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
     static SimpleDateFormat format3 = new SimpleDateFormat("HH:mm");
     private static DbUtils s = null;
+    private static long lastSecondClickTime;
 
     private DbUtils() {
     }
@@ -72,7 +73,6 @@ public class DbUtils {
     }
 
 
-
     public static void insertData(List<?> s) {
 //        for (int i = 0; i < 1000; i++) {
         daoSession.insert(s);
@@ -85,6 +85,7 @@ public class DbUtils {
             android.util.Log.d("4567899qqqq", box.toString());
         }
     }
+
     public static void initBoxNumberJY() {
 //        for (int i=1;i<=9;i++)
 //        {
@@ -102,14 +103,12 @@ public class DbUtils {
 //        daoSession.insertOrReplace(box2);
 
 
+        Box box16 = new Box((long) 16, 0, 0, 0, true);
+        Box box17 = new Box((long) 17, 0, 0, 1, true);
 
-        Box box16 = new Box((long)16, 0, 0, 0, true);
-        Box box17 = new Box((long)17, 0, 0, 1, true);
-
-        Box box18 = new Box((long)18, 0, 0, 0, true);
-        Box box19 = new Box((long)19, 0, 0, 1, true);
-        Box box20 = new Box((long)20, 0, 0, 0, true);
-
+        Box box18 = new Box((long) 18, 0, 0, 0, true);
+        Box box19 = new Box((long) 19, 0, 0, 1, true);
+        Box box20 = new Box((long) 20, 0, 0, 0, true);
 
 
         daoSession.insertOrReplace(box16);
@@ -117,7 +116,6 @@ public class DbUtils {
         daoSession.insertOrReplace(box18);
         daoSession.insertOrReplace(box19);
         daoSession.insertOrReplace(box20);
-
 
 
     }
@@ -133,16 +131,16 @@ public class DbUtils {
 
     public void deleteUser(User user) {
         //Box box =queryBox(user.getBoxId());
-            if (user.getBoxId()!=0) {
-                Box box = new Box(Long.parseLong(user.getBoxId() + ""), 0, 0, 0, false);
+        if (user.getBoxId() != 0) {
+            Box box = new Box(Long.parseLong(user.getBoxId() + ""), 0, 0, 0, false);
 
 //        box.setBind(false);
 //        box.setStatus(0);
-                daoSession.insertOrReplace(box);
-                daoSession.delete(user);
-            }else {
-                daoSession.delete(user);
-            }
+            daoSession.insertOrReplace(box);
+            daoSession.delete(user);
+        } else {
+            daoSession.delete(user);
+        }
 
 
 //    for(int i=0;i<userList .size();i++)
@@ -168,10 +166,9 @@ public class DbUtils {
 
     public static List queryAllUserWithoutAdmin() {
         List<User> users = daoSession.loadAll(User.class);
-        List<User> mUser=new ArrayList<User>();
-        for(User user:users)
-        {
-            if (user.getId()!=0&&user.getController()==false)
+        List<User> mUser = new ArrayList<User>();
+        for (User user : users) {
+            if (user.getId() != 0 && user.getController() == false)
                 mUser.add(user);
 //            if (user.getBoxId()==0||user.getController()==true||user.getName()==null||user.getId()==null)
 //                users.remove(user);
@@ -315,10 +312,7 @@ public class DbUtils {
     }
 
 
-
-
-
-    public static boolean storageLogUrgent(int status,Date date,long userID,String actionName) //存储紧急开门状态
+    public static boolean storageLogUrgent(int status, Date date, long userID, String actionName) //存储紧急开门状态
     {
         QueryBuilder<User> qb = daoSession.queryBuilder(User.class);
         User u = new User();
@@ -349,6 +343,7 @@ public class DbUtils {
         daoSession.insert(log);
         return true;
     }
+
     //public static boolean storageUrgentLog(int status,Date date,Long actionUserID,Box boxID){
 //    List<User> students = daoSession.queryRaw(User.class, " where id = ?", actionUserID + "");
 //    Log log = new Log( null , students.get(0).getBoxId(), userID, status, date.getTime(),null);
@@ -370,9 +365,8 @@ public class DbUtils {
         // Date storageTime)
         return true;
     }
+
     public static int checkStorageStatus(Date date, long userID) {
-
-
         Date startTimeAm;
         Date endTimeAM;
         Date startTimePM;
@@ -386,40 +380,53 @@ public class DbUtils {
             startTimeAm = new Date();
             startTimeAm.setHours(Integer.parseInt(upt.getStartTimeAM().split(":")[0]));
             startTimeAm.setMinutes(Integer.parseInt(upt.getStartTimeAM().split(":")[1]));
+            startTimeAm.setSeconds(0);
 
 
             endTimeAM = new Date();
             endTimeAM.setHours(Integer.parseInt(upt.getEndTimeAM().split(":")[0]));
             endTimeAM.setMinutes(Integer.parseInt(upt.getEndTimeAM().split(":")[1]));
-
+            endTimeAM.setSeconds(0);
 
             startTimePM = new Date();
             startTimePM.setHours(Integer.parseInt(upt.getStartTimePM().split(":")[0]));
             startTimePM.setMinutes(Integer.parseInt(upt.getStartTimePM().split(":")[1]));
+            startTimePM.setSeconds(0);
+
 
             endTimePM = new Date();
             endTimePM.setHours(Integer.parseInt(upt.getEndTimePM().split(":")[0]));
             endTimePM.setMinutes(Integer.parseInt(upt.getEndTimePM().split(":")[1]));
+            endTimePM.setSeconds(0);
+
 
             android.util.Log.d("currentUPT23333", nowTime.getTime() + "    " + endTimeAM.getTime() + "   " + startTimePM.getTime() + "       " + endTimePM.getTime() + "   " + date.getTime());
 
         } else {
-            startTimeAm=new Date();
+            startTimeAm = new Date();
             startTimeAm.setHours(MyApplication.startTimeAM.getHours());
             startTimeAm.setMinutes(MyApplication.startTimeAM.getMinutes());
+            startTimeAm.setSeconds(0);
 
-            endTimeAM=new Date();
+
+            endTimeAM = new Date();
             endTimeAM.setHours(MyApplication.endTimeAM.getHours());
             endTimeAM.setMinutes(MyApplication.endTimeAM.getMinutes());
+            endTimeAM.setSeconds(0);
 
-
-            startTimePM=new Date();
+            startTimePM = new Date();
             startTimePM.setHours(MyApplication.startTimePM.getHours());
             startTimePM.setMinutes(MyApplication.startTimePM.getMinutes());
+            startTimePM.setSeconds(0);
 
-            endTimePM=new Date();
+
+
+            endTimePM = new Date();
             endTimePM.setHours(MyApplication.endTimePM.getHours());
             endTimePM.setMinutes(MyApplication.endTimePM.getMinutes());
+            endTimePM.setSeconds(0);
+
+
         }
         if (booleanExistTimesTodayLog(DbUtils.getInstance().queryUser(userID).getBoxId()))
             return 5;
@@ -430,8 +437,73 @@ public class DbUtils {
         else return 0;
 
 
+    }
+
+    public static int checkFetchStatus(Date date, long userID) {
+        Date startTimeAm;
+        Date endTimeAM;
+        Date startTimePM;
+        Date endTimePM;
+        UserPersonalTime upt = DbUtils.getInstance().queryUserPersonalTime(userID);
+        Time nowTime = new Time(date.getHours(), date.getMinutes(), 0);
+        if (upt != null) {
+
+
+            android.util.Log.d("currentUPT", upt.getStartTimeAM() + "    " + upt.getEndTimeAM() + "   " + upt.getStartTimePM() + "       " + upt.getEndTimePM() + "   " + date.getTime());
+            startTimeAm = new Date();
+            startTimeAm.setHours(Integer.parseInt(upt.getStartTimeAM().split(":")[0]));
+            startTimeAm.setMinutes(Integer.parseInt(upt.getStartTimeAM().split(":")[1]));
+            startTimeAm.setSeconds(0);
+
+            endTimeAM = new Date();
+            endTimeAM.setHours(Integer.parseInt(upt.getEndTimeAM().split(":")[0]));
+            endTimeAM.setMinutes(Integer.parseInt(upt.getEndTimeAM().split(":")[1]));
+endTimeAM.setSeconds(0);
+
+            startTimePM = new Date();
+            startTimePM.setHours(Integer.parseInt(upt.getStartTimePM().split(":")[0]));
+            startTimePM.setMinutes(Integer.parseInt(upt.getStartTimePM().split(":")[1]));
+startTimePM.setSeconds(0);
+
+
+
+            endTimePM = new Date();
+            endTimePM.setHours(Integer.parseInt(upt.getEndTimePM().split(":")[0]));
+            endTimePM.setMinutes(Integer.parseInt(upt.getEndTimePM().split(":")[1]));
+            endTimePM.setSeconds(0);
+            android.util.Log.d("currentUPT23333", nowTime.getTime() + "    " + endTimeAM.getTime() + "   " + startTimePM.getTime() + "       " + endTimePM.getTime() + "   " + date.getTime());
+
+        } else {
+            startTimeAm = new Date();
+            startTimeAm.setHours(MyApplication.startTimeAM.getHours());
+            startTimeAm.setMinutes(MyApplication.startTimeAM.getMinutes());
+            startTimeAm.setSeconds(0);
+
+            endTimeAM = new Date();
+            endTimeAM.setHours(MyApplication.endTimeAM.getHours());
+            endTimeAM.setMinutes(MyApplication.endTimeAM.getMinutes());
+            endTimeAM.setSeconds(0);
+
+            startTimePM = new Date();
+            startTimePM.setHours(MyApplication.startTimePM.getHours());
+            startTimePM.setMinutes(MyApplication.startTimePM.getMinutes());
+            startTimePM.setSeconds(0);
+            endTimePM = new Date();
+            endTimePM.setHours(MyApplication.endTimePM.getHours());
+            endTimePM.setMinutes(MyApplication.endTimePM.getMinutes());
+            endTimePM.setSeconds(0);
+
+
+        }
+        if (date.after(startTimeAm) && date.before(endTimeAM))
+            return 1;
+        if (date.after(startTimePM) && date.before(endTimePM))
+            return 1;
+        else return 0;
+
 
     }
+
 
     public static boolean isStorage(Date date, long userID)        //  判断是否存入手机
     {
@@ -451,31 +523,35 @@ public class DbUtils {
         Date startTimeAM, endTimeAM;
         Date startTimePM;
         Date endTimePM;
-        UserPersonalTime upt=DbUtils.getInstance().queryUserPersonalTime(user.getId());
+        UserPersonalTime upt = DbUtils.getInstance().queryUserPersonalTime(user.getId());
         Date date = new Date();
-        Time nowTime = new Time(date.getHours(),date.getMinutes(),0);
-        if (upt!=null) {
-            android.util.Log.d("currentUPT", upt.getStartTimeAM()+"    "+upt.getEndTimeAM()+"   "+upt.getStartTimePM()+"       "+upt.getEndTimePM()+"   "+date.getTime());
+        Time nowTime = new Time(date.getHours(), date.getMinutes(), date.getSeconds());
+        if (upt != null) {
+            android.util.Log.d("currentUPT", upt.getStartTimeAM() + "    " + upt.getEndTimeAM() + "   " + upt.getStartTimePM() + "       " + upt.getEndTimePM() + "   " + date.getTime());
 
             startTimeAM = new Date();
             startTimeAM.setHours(Integer.parseInt(upt.getStartTimeAM().split(":")[0]));
             startTimeAM.setMinutes(Integer.parseInt(upt.getStartTimeAM().split(":")[1]));
+            startTimeAM.setSeconds(0);
 
-
-            endTimeAM=new Date();
+            endTimeAM = new Date();
             endTimeAM.setHours(Integer.parseInt(upt.getEndTimeAM().split(":")[0]));
             endTimeAM.setMinutes(Integer.parseInt(upt.getEndTimeAM().split(":")[1]));
+            endTimeAM.setSeconds(0);
 
-
-            startTimePM=new Date();
+            startTimePM = new Date();
             startTimePM.setHours(Integer.parseInt(upt.getStartTimePM().split(":")[0]));
             startTimePM.setMinutes(Integer.parseInt(upt.getStartTimePM().split(":")[1]));
+            startTimePM.setSeconds(0);
 
-            endTimePM=new Date();
+
+            endTimePM = new Date();
             endTimePM.setHours(Integer.parseInt(upt.getEndTimePM().split(":")[0]));
             endTimePM.setMinutes(Integer.parseInt(upt.getEndTimePM().split(":")[1]));
+            endTimePM.setSeconds(0);
 
-            android.util.Log.d("currentUPT23333", nowTime.getTime()+"    "+endTimeAM.getTime()+"   "+startTimePM.getTime()+"       "+endTimePM.getTime()+"   "+date.getTime());
+
+            android.util.Log.d("currentUPT23333", nowTime.getTime() + "    " + endTimeAM.getTime() + "   " + startTimePM.getTime() + "       " + endTimePM.getTime() + "   " + date.getTime());
 
             if (date.before(startTimeAM))
                 return true;
@@ -485,40 +561,42 @@ public class DbUtils {
                 return true;
 
         }
-        if (upt==null)
-        {
+        if (upt == null) {
             startTimeAM = new Date();
             startTimeAM.setHours(MyApplication.startTimeAM.getHours());
             startTimeAM.setMinutes(MyApplication.startTimeAM.getMinutes());
+            startTimeAM.setSeconds(0);
 
 
-            endTimeAM=new Date();
+            endTimeAM = new Date();
             endTimeAM.setHours(MyApplication.endTimeAM.getHours());
             endTimeAM.setMinutes(MyApplication.endTimeAM.getMinutes());
+            endTimeAM.setSeconds(0);
 
-
-            startTimePM=new Date();
+            startTimePM = new Date();
             startTimePM.setHours(MyApplication.startTimePM.getHours());
             startTimePM.setMinutes(MyApplication.startTimePM.getMinutes());
+            startTimePM.setSeconds(0);
 
-            endTimePM=new Date();
+            endTimePM = new Date();
             endTimePM.setHours(MyApplication.endTimePM.getHours());
             endTimePM.setMinutes(MyApplication.endTimePM.getMinutes());
+            endTimePM.setSeconds(0);
 
-            android.util.Log.d("currentUPT34445556", nowTime.getTime()+"    "+endTimeAM.getTime()+"   "+startTimePM.getTime()+"       "+endTimePM.getTime()+"   "+date.getTime());
+            android.util.Log.d("currentUPT34445556", nowTime.getTime() + "    " + endTimeAM.getTime() + "   " + startTimePM.getTime() + "       " + endTimePM.getTime() + "   " + date.getTime());
             if (date.before(startTimeAM))
                 return true;
-                if (date.after(endTimeAM) && date.before(startTimePM))
-                    return true;
-                if (date.after(endTimePM))
-                    return true;
-            }
+            if (date.after(endTimeAM) && date.before(startTimePM))
+                return true;
+            if (date.after(endTimePM))
+                return true;
+        }
 
 //            if (nowTime>endTimeAM&&nowTime<startTimePM)
 //            return true;
 //            if (nowTime>endTimePM)
 //                return true;
-                return false;
+        return false;
 //            if (date.getHours() >= Integer.parseInt(upt.getEndTimeAM().split(":")[0]) && date.getMinutes() >= Integer.parseInt(upt.getEndTimeAM().split(":")[1]) && date.getHours() <= Integer.parseInt(upt.getStartTimePM().split(":")[0]) && date.getMinutes() <= Integer.parseInt(upt.getStartTimePM().split(":")[1]))
 //                return true;
 //            if (date.getHours() >= Integer.parseInt(upt.getEndTimePM().split(":")[0]) && date.getMinutes() >= Integer.parseInt(upt.getEndTimePM().split(":")[1]))
@@ -596,7 +674,7 @@ public class DbUtils {
         QueryBuilder<User> qb = daoSession.queryBuilder(User.class);
         list = qb.list();
         for (User user : list) {
-            if (user.getBoxId()!=0) {
+            if (user.getBoxId() != 0) {
                 DayLogBean dayLogBean = new DayLogBean();
                 dayLogBean.setId(user.getId());
                 dayLogBean.setName(user.getName());
@@ -615,7 +693,7 @@ public class DbUtils {
         QueryBuilder<User> qb = daoSession.queryBuilder(User.class);
         list = qb.list();
         for (User user : list) {
-            if (user.getBoxId()!=0) {
+            if (user.getBoxId() != 0) {
                 WeekLogBean weekLogBean = new WeekLogBean();
                 weekLogBean.setId(user.getId());
                 weekLogBean.setName(user.getName());
@@ -633,7 +711,7 @@ public class DbUtils {
         QueryBuilder<User> qb = daoSession.queryBuilder(User.class);
         list = qb.list();
         for (User user : list) {
-            if (user.getBoxId()!=0) {
+            if (user.getBoxId() != 0) {
                 MonthLogBean monthLogBean = new MonthLogBean();
                 monthLogBean.setId(user.getId());
                 monthLogBean.setName(user.getName());
@@ -657,127 +735,124 @@ public class DbUtils {
         //   android.util.Log.d("boxDayLog777", logs.get(0).getTime()+"");
         android.util.Log.d("boxDayLog777", logs.size() + "");
         for (Log log : logs) {
-        //    for (DayLogBean dayLogBean : dayLogBeans) {
-                for (int i = 0; i < dayLogBeans.size(); i++) {
-                    if (dayLogBeans.get(i).getId() == log.getUserId()) {
-                        DayLogBean temp = dayLogBeans.get(i);
-                        switch (log.getStatus()) {
-                            case 0: {
-                                try {
-                                    if (temp.getStoreTime() == null)
-                                        temp.setStoreTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    else {
-                                        temp.setStoreTime(temp.getStoreTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    }
+            //    for (DayLogBean dayLogBean : dayLogBeans) {
+            for (int i = 0; i < dayLogBeans.size(); i++) {
+                if (dayLogBeans.get(i).getId() == log.getUserId()) {
+                    DayLogBean temp = dayLogBeans.get(i);
+                    switch (log.getStatus()) {
+                        case 0: {
+                            try {
+                                if (temp.getStoreTime() == null)
+                                    temp.setStoreTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                else {
+                                    temp.setStoreTime(temp.getStoreTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                }
 
-                                    if (temp.getStoreStatus()==null)
+                                if (temp.getStoreStatus() == null)
                                     temp.setStoreStatus("正常");
-                                    else {
-                                        temp.setStoreStatus(temp.getStoreStatus()+",正常");
-                                    }
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    android.util.Log.d("Time_error_2333", e.toString());
-
-                                    e.printStackTrace();
+                                else {
+                                    temp.setStoreStatus(temp.getStoreStatus() + ",正常");
                                 }
-                                break;
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                android.util.Log.d("Time_error_2333", e.toString());
+
+                                e.printStackTrace();
                             }
-                            case 1: {
-                                try {
-                                    if (temp.getFetchTime() == null) {
-                                        temp.setFetchTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    } else {
-                                        temp.setFetchTime(temp.getFetchTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    }
-
-
-                                    if (temp.getFetchStatus()==null)
-                                        temp.setFetchStatus("正常");
-                                    else {
-                                        temp.setFetchStatus(temp.getFetchStatus()+",正常");
-                                    }
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    android.util.Log.d("Time_error", e.toString());
-                                    e.printStackTrace();
-                                }
-                                break;
-                            }
-                            case 2: {
-                                try {
-                                    if (temp.getStoreTime() == null)
-                                        temp.setStoreTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    else {
-                                        temp.setStoreTime(temp.getStoreTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    }
-
-
-
-                                    if (temp.getStoreStatus()==null)
-                                        temp.setStoreStatus("超时");
-                                    else {
-                                        temp.setStoreStatus(temp.getStoreStatus()+",超时");
-                                    }
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    android.util.Log.d("Time_error_22222", e.toString());
-                                }
-                                break;
-                            }
-                            case 3: {
-                                try {
-                                    if (temp.getFetchTime() == null) {
-                                        temp.setFetchTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    } else {
-                                        temp.setFetchTime(temp.getFetchTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
-                                    }
-
-
-
-                                    if (temp.getFetchStatus()==null)
-                                        temp.setFetchStatus("紧急");
-                                    else {
-                                        temp.setFetchStatus(temp.getFetchStatus()+",紧急");
-                                    }
-                                    temp.setAuthor(log.getActionUserName());
-
-
-
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    android.util.Log.d("Time_error", e.toString());
-                                }
-                                break;
-                            }
-                            case 4: {
-                                try {
-                                    temp.setStoreStatus("未存");
-                                    temp.setFetchStatus("未取");
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    android.util.Log.d("Time_error", e.toString());
-                                }
-                                break;
-                            }
-                            case 5: {
-                                try {
-                                    temp.setRemark("多次存取");
-                                    dayLogBeans.set(i, temp);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    android.util.Log.d("Time_error", e.toString());
-                                }
-                                break;
-                            }
-
-
+                            break;
                         }
+                        case 1: {
+                            try {
+                                if (temp.getFetchTime() == null) {
+                                    temp.setFetchTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                } else {
+                                    temp.setFetchTime(temp.getFetchTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                }
+
+
+                                if (temp.getFetchStatus() == null)
+                                    temp.setFetchStatus("正常");
+                                else {
+                                    temp.setFetchStatus(temp.getFetchStatus() + ",正常");
+                                }
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                android.util.Log.d("Time_error", e.toString());
+                                e.printStackTrace();
+                            }
+                            break;
+                        }
+                        case 2: {
+                            try {
+                                if (temp.getStoreTime() == null)
+                                    temp.setStoreTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                else {
+                                    temp.setStoreTime(temp.getStoreTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                }
+
+
+                                if (temp.getStoreStatus() == null)
+                                    temp.setStoreStatus("超时");
+                                else {
+                                    temp.setStoreStatus(temp.getStoreStatus() + ",超时");
+                                }
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                android.util.Log.d("Time_error_22222", e.toString());
+                            }
+                            break;
+                        }
+                        case 3: {
+                            try {
+                                if (temp.getFetchTime() == null) {
+                                    temp.setFetchTime(transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                } else {
+                                    temp.setFetchTime(temp.getFetchTime() + "    " + transferLongToDate("MM月dd日 HH时mm分ss秒", log.getTime()));
+                                }
+
+
+                                if (temp.getFetchStatus() == null)
+                                    temp.setFetchStatus("紧急");
+                                else {
+                                    temp.setFetchStatus(temp.getFetchStatus() + ",紧急");
+                                }
+                                temp.setAuthor(log.getActionUserName());
+
+
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                android.util.Log.d("Time_error", e.toString());
+                            }
+                            break;
+                        }
+                        case 4: {
+                            try {
+                                temp.setStoreStatus("未存");
+                                temp.setFetchStatus("未取");
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                android.util.Log.d("Time_error", e.toString());
+                            }
+                            break;
+                        }
+                        case 5: {
+                            try {
+                                temp.setRemark("多次存取");
+                                dayLogBeans.set(i, temp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                android.util.Log.d("Time_error", e.toString());
+                            }
+                            break;
+                        }
+
+
                     }
                 }
+            }
             //        }
         }
 
@@ -792,10 +867,24 @@ public class DbUtils {
                     DayLogBean temp = dayLogBeans.get(i);
 
                     try {
-                        if (temp.getRemark()=="null")
-                            temp.setRemark(log.getRemark());
-                        else
-                            temp.setRemark(temp.getRemark()+"|"+log.getRemark());
+                        if (temp.getRemark() == "null" || temp.getRemark() == null || temp.getRemark().equals(null))
+                            temp.setRemark("");
+                        if (temp.getRemark().equals("")) {
+                            if (log.getStatus() == 0)
+                                temp.setRemark("存备注:" + log.getRemark());
+
+                            if (log.getStatus() == 1)
+                                temp.setRemark("取备注:" + log.getRemark());
+
+                        } else {
+
+                            if (log.getStatus() == 0)
+                                temp.setRemark(temp.getRemark() + "---" + "存备注:" + log.getRemark());
+                            if (log.getStatus() == 1)
+                                //                   temp.setRemark("取异常:"+log.getRemark());
+                                temp.setRemark(temp.getRemark() + "---" + "取备注:" + log.getRemark());
+                            //             temp.setRemark(temp.getRemark()+"---"+log.getRemark());
+                        }
                         dayLogBeans.set(i, temp);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -806,13 +895,6 @@ public class DbUtils {
                 }
             }
         }
-
-
-
-
-
-
-
 
 
         return dayLogBeans;
@@ -1021,7 +1103,7 @@ public class DbUtils {
         for (Box box : boxes) {
             if (box.getBind() == false) {
                 unbindBoxes.add(box.getBoxId() + "");
-                android.util.Log.d("box23333", box.getBoxId()+"");
+                android.util.Log.d("box23333", box.getBoxId() + "");
             }
         }
         return unbindBoxes;
@@ -1170,6 +1252,6 @@ public class DbUtils {
         return users.size();
     }
 
-
 }
+
 

@@ -10,7 +10,6 @@ android {
         targetSdkVersion 28
         versionCode 9
         versionName "1.18"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -69,8 +68,8 @@ dependencies {
     //最新版本
     implementation 'com.sun.mail:android-mail:1.6.0'
     implementation 'com.sun.mail:android-activation:1.6.0'
-    implementation files('E:\\AndroidStudioProjects\\JinYingStorge\\app\\libs\\jxl-2.6.12.jar')
-    implementation files('E:\\AndroidStudioProjects\\JinYingStorge\\app\\libs\\ZY-Interface.jar')
+    implementation files('D:\\AndroidStudioProjects\\JinYingStorge\\app\\libs\\jxl-2.6.12.jar')
+    implementation files('D:\\AndroidStudioProjects\\JinYingStorge\\app\\libs\\ZY-Interface.jar')
     configurations { all*.exclude group: 'javax.activation', module: 'activation' }
     implementation 'com.android.support:design:28+'
     implementation 'com.android.support:support-v4:28+'

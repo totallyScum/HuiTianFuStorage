@@ -1,5 +1,7 @@
 package com.wandao.myapplication.utils;
 
+import android.os.CountDownTimer;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,7 +9,7 @@ import java.util.Date;
 public class TimeUtil {
     //创建 SingleObject 的一个对象
     private static TimeUtil instance = new TimeUtil();
-
+    private CountDownTimer timer;
     //让构造函数为 private，这样该类就不会被实例化
     private TimeUtil(){}
 
@@ -67,4 +69,8 @@ else return false;
     public static void getCurrentTime() {
         Date date = new Date();
     }
+
+
+
+
 }

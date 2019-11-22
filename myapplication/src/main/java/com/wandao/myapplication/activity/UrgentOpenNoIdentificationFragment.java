@@ -186,8 +186,8 @@ public class UrgentOpenNoIdentificationFragment extends Fragment implements Adap
 //                                        boxService.lockControlOpenDoor(Byte.valueOf(doorNumber + 1 + ""), Byte.valueOf(0 + ""));
 //                                    if (doorNumber >= 20)
 //                                        boxService.lockControlOpenDoor(Byte.valueOf(((doorNumber - 20) + 1 + "")), Byte.valueOf(15 + ""));
-//                                    if (DbUtils.queryBox(doorNumber + 1).getStatus()!=5)
-//                                    DbUtils.changeBoxStatus(0, DbUtils.queryBox(doorNumber + 1), new Date().getTime());            //柜门状态改变，标记为空
+                                    if (DbUtils.queryBox(doorNumber).getStatus()!=5)
+                                    DbUtils.changeBoxStatus(0, DbUtils.queryBox(doorNumber), new Date().getTime());            //柜门状态改变，标记为空
                                 } catch (Exception e) {
                                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                                     e.printStackTrace();

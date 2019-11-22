@@ -8,8 +8,12 @@
         style="@style/edit_main_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_marginStart="-1dp"
+        android:layout_marginLeft="-1dp"
+        android:hint="下拉选择原因，其他原因手动输入"
+        />
 
     <ImageView
         android:id="@+id/edit_spinner_expand"

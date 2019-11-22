@@ -114,7 +114,7 @@ public class StorageLogService extends Service {
 //        calendar.set(Calendar.SECOND, 00);
 //        calendar.set(Calendar.MILLISECOND, 0);
         Date date =new Date(System.currentTimeMillis());
-        date.setHours(19);
+        date.setHours(17);
         date.setMinutes(00);
 
         // calendar.set(Calendar.DAY_OF_WEEK,1);

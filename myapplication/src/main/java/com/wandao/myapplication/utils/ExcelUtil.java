@@ -449,7 +449,7 @@ public class ExcelUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd号 E");
 
         String format = simpleDateFormat.format(new Date());
-        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "授权人", "异常存取原因"};
+        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "紧急取授权人", "异常存取原因"};
         String sheetNameDay = "日报";
         String excelDayFileName = "/日报"+format+".xls";
         ExcelUtil.initExcel(filePath + excelDayFileName, sheetNameDay, title_day);
@@ -474,7 +474,7 @@ public class ExcelUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd号 E");
 
         String format = simpleDateFormat.format(new Date(choose));
-        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "授权人", "异常存取原因"};
+        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "紧急取授权人", "异常存取原因"};
         String sheetNameDay = "日报";
         String excelDayFileName = "/日报" + format + ".xls";
         ExcelUtil.initExcel(filePath + excelDayFileName, sheetNameDay, title_day);
@@ -497,7 +497,7 @@ public class ExcelUtil {
         if (!file.exists()) {
             file.mkdirs();
         }
-        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "授权人", "异常存取原因"};
+        String[] title_day = {"工号", "部门", "姓名", "柜门号", "存入时间", "存入状态", "取出时间", "取出状态", "紧急取授权人", "异常存取原因"};
         String sheetNameDay = "元数据";
         String excelMetaFileName = "/自定义时间元数据表.xls";
         ExcelUtil.initExcel(filePath + excelMetaFileName, sheetNameDay, title_day);
