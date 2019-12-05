@@ -2,6 +2,7 @@ package com.wandao.myapplication.network.request;
 
 import com.wandao.myapplication.network.response.LogResponse;
 import com.wandao.myapplication.network.response.Response;
+import com.wandao.myapplication.network.response.SimpleResponse;
 
 import java.util.List;
 
@@ -19,9 +20,23 @@ import retrofit2.http.Query;
 
 public interface Request {
 
-    public static String HOST = "http://192.168.3.201:30135/";
-    @Headers({"Content-Type: application/json","Accept: application/json"})
-    @PUT("BoxsLogCollect/NewLog")
-    Observable<Response<String>> newLog(@Body LogRequestBody logRequestBody);
 
+
+    //开关柜门事件
+    String HOST = "http://192.168.1.218:80/";
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("zk-web/sendDoorEvent")
+    Observable<SimpleResponse> newLog(@Body LogRequestBody logRequestBody);
+
+
+    //注册用户
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("zk-web/sendEmployeeRegisterInfo")
+    Observable<SimpleResponse> registerUser(@Body EmployeeRegisterInfoRequestBody logRequestBody);
+
+
+//获取部门列表
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("zk-web/getDepartmentList")
+    Observable<SimpleResponse > getDepartmentList(@Body EmployeeRegisterInfoRequestBody logRequestBody);
 }

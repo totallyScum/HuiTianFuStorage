@@ -114,11 +114,24 @@ public class DoorUtils {
   //     status=0;
 
         if(countDownTimer==null)
+        {
             initCountDown();
+            if (countDownTimer!=null)
+            countDownTimer.start();
+
+        }
+
 
         if (countDownTimer!=null)
+        {
             countDownTimer.cancel();
-        countDownTimer.start();
+            countDownTimer=null;
+            initCountDown();
+            if (countDownTimer!=null)
+            countDownTimer.start();
+        }
+//            countDownTimer.cancel();
+//        countDownTimer.start();
 
 
 
@@ -139,6 +152,7 @@ return true;
 
                     @Override
                     public void run() {
+                        Log.d("initCountDown","66666666666");
 
                        countDownTimer= new CountDownTimer(30000, 1000) {//第一个参数表示总时间，第二个参数表示间隔时间。
 

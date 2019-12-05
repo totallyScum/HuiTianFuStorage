@@ -25,6 +25,7 @@ import com.wandao.myapplication.model.Contract;
 import com.wandao.myapplication.model.Model;
 import com.wandao.myapplication.network.request.LogRequestBody;
 import com.wandao.myapplication.network.response.Response;
+import com.wandao.myapplication.network.response.SimpleResponse;
 import com.wandao.myapplication.network.schedulers.SchedulerProvider;
 import com.wandao.myapplication.presenter.Presenter;
 import com.wandao.myapplication.service.IRemoteService;
@@ -111,16 +112,16 @@ public class UrgentOpenActivity extends BaseActivity implements AdapterView.OnIt
             DoorUtils.getSingleton().openDoor(users.get(position).getBoxId(),getApplicationContext());   //银华开门方式
 
 
-            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
-            logRequestBody.setLogID("2019093001");
-            logRequestBody.setDoorID(users.get(position).getBoxId() + "");
-            logRequestBody.setUserID(users.get(position).getId() + "");
-            logRequestBody.setUserName(users.get(position).getName());
-            logRequestBody.setDepsName(users.get(position).getDepartment());
-            logRequestBody.setStatus("3");
-            logRequestBody.setTime(new Date().getTime());
-            logRequestBody.setActionUserName(DbUtils.getInstance().queryUser(currentUserID).getName());
-            presenter.putLogRequest(logRequestBody);
+//            logRequestBody.setBoxIp(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+//            logRequestBody.setLogID("2019093001");
+//            logRequestBody.setDoorID(users.get(position).getBoxId() + "");
+//            logRequestBody.setUserID(users.get(position).getId() + "");
+//            logRequestBody.setUserName(users.get(position).getName());
+//            logRequestBody.setDepsName(users.get(position).getDepartment());
+//            logRequestBody.setStatus("3");
+//            logRequestBody.setTime(new Date().getTime());
+//            logRequestBody.setActionUserName(DbUtils.getInstance().queryUser(currentUserID).getName());
+//            presenter.putLogRequest(logRequestBody);
             //开门指令
      //       DbUtils.storageLog(3, new Date(),users.get(position).getId());
             DbUtils.storageLogUrgent(3, new Date(),users.get(position).getId(),DbUtils.getInstance().queryUser(currentUserID).getName());
@@ -187,13 +188,15 @@ public class UrgentOpenActivity extends BaseActivity implements AdapterView.OnIt
         }
     }
 
+
+
     @Override
-    public void getDataSuccess(Response<String> msg) {
+    public void getDataFail(String s) {
 
     }
 
     @Override
-    public void getDataFail(String s) {
+    public void getDataSuccess(SimpleResponse msg) {
 
     }
 }

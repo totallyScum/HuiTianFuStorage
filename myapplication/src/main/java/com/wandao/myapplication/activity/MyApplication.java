@@ -24,7 +24,13 @@ import com.wandao.myapplication.service.DoorService;
 import com.wandao.myapplication.service.IRemoteService;
 import com.wandao.myapplication.service.StorageLogService;
 import com.wandao.myapplication.utils.DbUtils;
+import com.wandao.myapplication.utils.OKHttpUpdateHttpService;
 import com.wandao.myapplication.utils.SPUtils;
+import com.xuexiang.xupdate.XUpdate;
+import com.xuexiang.xupdate.entity.UpdateError;
+import com.xuexiang.xupdate.listener.OnUpdateFailureListener;
+import com.xuexiang.xupdate.utils.UpdateUtils;
+import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -33,8 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 import static android.app.AlarmManager.ELAPSED_REALTIME;
+import static com.xuexiang.xupdate.entity.UpdateError.ERROR.CHECK_NO_NEW_VERSION;
 
 public class MyApplication extends android.app.Application {
     private static DaoSession daoSession;
@@ -146,6 +156,7 @@ public class MyApplication extends android.app.Application {
 
         doorIntent = new Intent(getmContext(), DoorService.class);
         startService(doorIntent);
+        initUpdate();
     }
     Handler handler=new Handler(){
         @Override
@@ -235,9 +246,35 @@ public void initAlarmDataCheck(){             //打开一个时间广播，去�
         return daoSession;
     }
 
-public void  balanceLog(){
+    private void initUpdate(){
+        XUpdate.get()
+                .debug(true)
+                .isWifiOnly(true)                                               //默认设置只在wifi下检查版本更新
+                .isGet(true)                                                    //默认设置使用get请求检查版本
+                .isAutoMode(false)                                              //默认设置非自动模式，可根据具体使用配置
+                .param("versionCode", UpdateUtils.getVersionCode(this))         //设置默认公共请求参数
+                .param("appKey", getPackageName())
+                .setOnUpdateFailureListener(new OnUpdateFailureListener() {     //设置版本更新出错的监听
+                    @Override
+                    public void onFailure(UpdateError error) {
+                        if (error.getCode() != CHECK_NO_NEW_VERSION) {          //对不同错误进行处理
+                            //         ToastUtils.toast(error.toString());
+                            Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .supportSilentInstall(true)                                     //设置是否支持静默安装，默认是true
+                .setIUpdateHttpService(new OKHttpUpdateHttpService())           //这个必须设置！实现网络请求功能。
+                .init(this);
+    }
 
 
-}
+    private void initOKHttpUtils() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(20000L, TimeUnit.MILLISECONDS)
+                .readTimeout(20000L, TimeUnit.MILLISECONDS)
+                .build();
+        OkHttpUtils.initClient(okHttpClient);
+    }
 
 }

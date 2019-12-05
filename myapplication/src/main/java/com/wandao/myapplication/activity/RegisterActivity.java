@@ -31,15 +31,25 @@ import com.baidu.idl.sample.ui.BaseActivity;
 import com.baidu.idl.sample.view.BinocularView;
 import com.baidu.idl.sample.view.MonocularView;
 import com.wandao.myapplication.greendao.User;
+import com.wandao.myapplication.model.Contract;
+import com.wandao.myapplication.model.Model;
+import com.wandao.myapplication.network.request.EmployeeRegisterInfoRequestBody;
+import com.wandao.myapplication.network.request.LogRequestBody;
+import com.wandao.myapplication.network.response.Response;
+import com.wandao.myapplication.network.response.SimpleResponse;
+import com.wandao.myapplication.network.schedulers.SchedulerProvider;
+import com.wandao.myapplication.presenter.Presenter;
+import com.wandao.myapplication.presenter.RegisterPresenter;
 import com.wandao.myapplication.utils.DbUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 
 /**
  * Created by litonghui on 2018/11/17.
  */
 
-public class RegisterActivity extends Activity implements View.OnClickListener {
+public class RegisterActivity extends Activity implements View.OnClickListener , Contract.View{
 //    private View mLayoutInput;
 //    private EditText mNickView;
 
@@ -57,6 +67,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     private String mNickName;
     private User user;       //员工对象
     private TextView countDown;
+
+    private RegisterPresenter presenter;
+    private static EmployeeRegisterInfoRequestBody request = new EmployeeRegisterInfoRequestBody();
+
+
+
     MyHandler handler = new MyHandler(this);
     Runnable runnable = new Runnable() {
         @Override
@@ -153,6 +169,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 //        setAction();
 //        FaceSDKManager.getInstance().getFaceLiveness()
 //                .setCurrentTaskType(FaceLiveness.TaskType.TASK_TYPE_REGIST);
+        presenter = new RegisterPresenter(new Model(), this, SchedulerProvider.getInstance());
 
     }
 
@@ -285,6 +302,21 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                 if (user.getBoxId()!=0)
                     DbUtils.getInstance().bindBox(user.getBoxId());
 
+
+
+                       request.setAccountPkId(user.getId()+"");
+                          request.setName(user.getName());
+                        request.setDoorId(user.getBoxId()+"");
+                        request.setDepartment("test");
+                          request.setMachineNumber("test");
+                        request.setTime(new Date().getTime()+"");
+                        request.setTel("12345678901");
+                        request.setEmail("a@b.com");
+                        StringBuilder s=new StringBuilder();
+                        s.append("2222222222222");
+                        request.setImage(s.toString());
+                presenter.postRegisterRequest(request);
+
 //                DbUtils.insertUser(user);
 //                DbUtils.bindBox(user.getBoxId());
             }
@@ -317,6 +349,19 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 //                finish();
             }
         });
+    }
+
+
+    @Override
+    public void getDataFail(String s) {
+        Log.d("SimpleResponse",s);
+
+    }
+
+    @Override
+    public void getDataSuccess(SimpleResponse msg) {
+Log.d("SimpleResponse",msg.getMessage()+"|||||||"+msg.getCode()+"");
+
     }
 
     private class CountDown extends Thread {
@@ -388,6 +433,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                     setAction();
                     FaceSDKManager.getInstance().getFaceLiveness()
                             .setCurrentTaskType(FaceLiveness.TaskType.TASK_TYPE_REGIST);
+
+
+
+
+
+
                 }
             }, 0);//0秒后执行Runnable中的run方法
 

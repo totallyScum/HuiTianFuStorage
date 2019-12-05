@@ -1,3 +1,3 @@
 # ninja log v5
-1	394	0	CMakeFiles/DepthUtils.dir/src/main/cpp/DepthUtils.cpp.o	933b6b853174bf6e
-396	678	0	../../../../build/intermediates/cmake/release/obj/armeabi-v7a/libDepthUtils.so	9a1a059ba9eb89d1
+0	568	0	CMakeFiles/DepthUtils.dir/src/main/cpp/DepthUtils.cpp.o	933b6b853174bf6e
+570	941	0	../../../../build/intermediates/cmake/release/obj/armeabi-v7a/libDepthUtils.so	9a1a059ba9eb89d1

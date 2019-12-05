@@ -8,10 +8,9 @@ android {
         applicationId "com.wandao.myapplication"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.18"
+        versionCode 19
+        versionName "1.19"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -79,16 +78,21 @@ dependencies {
     implementation project(path: ':editspinner')
 
 
+   // implementation 'com.github.sun-sky:Marquee:1.0.0'
+  //  implementation 'com.sunfusheng:MarqueeView:<latest-version>'
+    implementation 'com.github.xuexiangjys:XUpdate:1.1.1'
+    implementation 'com.zhy:okhttputils:2.6.2'
+
 
 
 
     // 网络请求依赖
-    compile "io.reactivex.rxjava2:rxjava:2.1.0"
-    compile "io.reactivex.rxjava2:rxandroid:2.0.1"
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    implementation "io.reactivex.rxjava2:rxjava:2.1.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
     compile project(path: ':serialportlibrary')
 
 }

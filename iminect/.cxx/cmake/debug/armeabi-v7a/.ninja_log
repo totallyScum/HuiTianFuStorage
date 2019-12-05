@@ -1,3 +1,3 @@
 # ninja log v5
-1	372	0	CMakeFiles/digColor.dir/src/main/cpp/digColor.cpp.o	d6cb3e6bbb737939
-374	754	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libdigColor.so	7cea2c3180d108dd
+1	257	0	CMakeFiles/digColor.dir/src/main/cpp/digColor.cpp.o	d6cb3e6bbb737939
+258	2217	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libdigColor.so	7cea2c3180d108dd

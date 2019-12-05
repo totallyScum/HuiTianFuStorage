@@ -31,11 +31,11 @@
         android:roundIcon="@mipmap/launcher_wandao"
         android:supportsRtl="true"
         tools:ignore="HardcodedDebugMode">
-
+        <activity android:name=".MarqueeActivity"></activity>
         <activity
             android:name=".MenuActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></activity>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         <activity
             android:name=".activity.UserTimeSettingActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
@@ -52,7 +52,7 @@
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".activity.SettingActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleInstance"
@@ -96,14 +96,12 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".broadcastReceiver.DoorReceiver">
             <intent-filter>
                 <action android:name="com.hzjubu.action.ACK_DOORS_STATUS" />
                 <action android:name="com.hzjubu.action.ACK_OPEN_DOOR" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

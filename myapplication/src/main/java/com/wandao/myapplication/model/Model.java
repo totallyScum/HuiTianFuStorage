@@ -2,14 +2,11 @@ package com.wandao.myapplication.model;
 
 
 import com.wandao.myapplication.network.NetWorkManager;
+import com.wandao.myapplication.network.request.EmployeeRegisterInfoRequestBody;
 import com.wandao.myapplication.network.request.LogRequestBody;
-import com.wandao.myapplication.network.response.LogResponse;
-import com.wandao.myapplication.network.response.Response;
-
-import java.util.List;
+import com.wandao.myapplication.network.response.SimpleResponse;
 
 import io.reactivex.Observable;
-import okhttp3.RequestBody;
 
 /**
  * Created by Zaifeng on 2018/3/1.
@@ -17,8 +14,13 @@ import okhttp3.RequestBody;
 
 public class Model implements Contract.Model {
     @Override
-    public Observable<Response<String>> getLogResponse(LogRequestBody logRequestBody) {
+    public Observable<SimpleResponse> getLogResponse(LogRequestBody logRequestBody) {
         return NetWorkManager.getRequest().newLog(logRequestBody);
+    }
+
+    @Override
+    public Observable<SimpleResponse> getRegisterResponse(EmployeeRegisterInfoRequestBody employeeRegisterInfoRequestBody) {
+        return NetWorkManager.getRequest().registerUser(employeeRegisterInfoRequestBody);
     }
 
 

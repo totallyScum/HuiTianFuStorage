@@ -1,13 +1,10 @@
 package com.wandao.myapplication.model;
+import com.wandao.myapplication.network.request.EmployeeRegisterInfoRequestBody;
 import com.wandao.myapplication.network.request.LogRequestBody;
-import com.wandao.myapplication.network.request.Request;
-import com.wandao.myapplication.network.response.LogResponse;
 import com.wandao.myapplication.network.response.Response;
-
-import java.util.List;
+import com.wandao.myapplication.network.response.SimpleResponse;
 
 import io.reactivex.Observable;
-import okhttp3.RequestBody;
 
 
 /**
@@ -21,12 +18,16 @@ public class Contract {
     }
 
     public interface View {
-        void getDataSuccess(Response<String> msg);
         void getDataFail(String s);
+
+
+        void getDataSuccess(SimpleResponse msg);
+
     }
 
     public interface Model {
-        public Observable<Response<String>> getLogResponse(LogRequestBody logRequestBody);
+        public Observable<SimpleResponse> getLogResponse(LogRequestBody logRequestBody);
+        public Observable<SimpleResponse> getRegisterResponse(EmployeeRegisterInfoRequestBody employeeRegisterInfoRequestBody);
     }
 
 }

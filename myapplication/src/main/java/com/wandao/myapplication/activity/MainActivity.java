@@ -2,6 +2,7 @@ package com.wandao.myapplication.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ZysjSystemManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -64,6 +65,7 @@ import com.bumptech.glide.Glide;
 import com.wandao.myapplication.MenuActivity;
 import com.wandao.myapplication.R;
 import com.wandao.myapplication.adapter.DoorRecycleViewAdapter;
+import com.wandao.myapplication.constant.UrlConstant;
 import com.wandao.myapplication.greendao.Box;
 import com.wandao.myapplication.greendao.BoxDao;
 import com.wandao.myapplication.greendao.User;
@@ -73,6 +75,7 @@ import com.wandao.myapplication.model.Contract;
 import com.wandao.myapplication.model.Model;
 import com.wandao.myapplication.network.request.LogRequestBody;
 import com.wandao.myapplication.network.response.Response;
+import com.wandao.myapplication.network.response.SimpleResponse;
 import com.wandao.myapplication.network.schedulers.SchedulerProvider;
 import com.wandao.myapplication.presenter.Presenter;
 import com.wandao.myapplication.service.DoorService;
@@ -84,9 +87,11 @@ import com.wandao.myapplication.utils.DbUtils;
 import com.wandao.myapplication.utils.DoorUtils;
 import com.wandao.myapplication.utils.ImageUtil;
 import com.wandao.myapplication.utils.NetUtils;
+import com.wandao.myapplication.utils.NotifyUtils;
 import com.wandao.myapplication.utils.SPUtils;
 import com.wandao.myapplication.utils.TimeUtil;
 import com.wrbug.editspinner.EditSpinner;
+import com.xuexiang.xupdate.XUpdate;
 import com.youth.banner.Banner;
 
 import java.util.ArrayList;
@@ -142,7 +147,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
     private View popRootView;         //迟到早退弹窗
     private EditSpinner editSpinner;
     private Presenter presenter;
-    private static LogRequestBody logRequestBody = new LogRequestBody();
+    private static LogRequestBody logRequestBody ;
     private static int statusCount = -1;
     private static WindowManager windowManager;
     private static View parentView;
@@ -195,12 +200,27 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 //        intent.setData(Uri.parse("package:" + getPackageName()));
 //        startActivityForResult(intent,100);
         //注册广播接收器
-        requestOverlayPermission();
-    }
+ //       requestOverlayPermission();
 
-    @Override
-    public void getDataSuccess(Response<String> msg) {
-        Log.d("vvvvv", msg.getMsg() + "6666");
+
+        String SerialNumber = android.os.Build.SERIAL;
+        Log.d("6666111",SerialNumber);
+
+
+        if (!NotifyUtils.isNotifyPermissionOpen(this)) {
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setMessage("通知权限未打开，是否前去打开？")
+                    .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int w) {
+                            NotifyUtils.openNotifyPermissionSetting(MainActivity.this);
+                        }
+                    })
+                    .setNegativeButton("否", null)
+                    .show();
+        }
+        forceUpdate();
+
     }
 
     @Override
@@ -208,7 +228,10 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         Log.d("vvvvv", s + "23333");
     }
 
-
+    @Override
+    public void getDataSuccess(SimpleResponse msg) {
+        Log.d("vvvvv", msg + "7777777");
+    }
 
 
     public class MyReceiver extends BroadcastReceiver {
@@ -286,15 +309,19 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                 } else
                     if(isFastClickInSecond()){
 
+
+//                        User tempUser=new User();
+//                        tempUser=currentUser;
+
                         if (currentBox.getStatus() == 1&&currentBox.getBoxId()!=0) {
                             Toast.makeText(getApplicationContext(), "请勿重复进行存操作！", LENGTH_LONG).show();
                         }
 
                     if (currentBox.getStatus() == 0&&currentBox.getBoxId()!=0) {
                         try {
-                            //     boxService.lockControlOpenDoor(Byte.valueOf(1+""), Byte.valueOf(0 + ""));
+                            //     boxService.lockControlOpenDoor(Byte.valueOf(1+""), Byte.valueOf(0 + ""));fon
                             if (DbUtils.checkStorageStatus(new Date(), currentUser.getId()) == 2) {
-                                showLateWindow(getApplicationContext(), currentUser.getId());
+                                showLateWindow(getApplicationContext(), currentUser);
                             }
                         DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());
 
@@ -303,6 +330,50 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                                DbUtils.changeBoxStatus(1, currentBox, new Date().getTime());            //柜门状态改变，标记为非空doorAdapter.notifyDataSetChanged();
                                //银华开门方式
                             doorAdapter.notifyDataSetChanged();
+
+
+
+
+
+                            //给服务器端发送请求
+
+                            currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+
+                            logRequestBody=new LogRequestBody();
+                            logRequestBody.setAccountPKId(currentUser.getId()+"");
+                            logRequestBody.setDoorID(currentUser.getBoxId()+"");
+                            logRequestBody.setStatus(0+"");
+                            logRequestBody.setActionTime(new Date().getTime()+"");
+                            logRequestBody.setActionUserId(currentUser.getId()+"");
+                            logRequestBody.setRemark("");
+
+
+                            Log.d("vvvvv",logRequestBody.toString());
+                            presenter.putLogRequest(logRequestBody);
+
+
+//                            logRequestBody.set(NetUtils.getLocalIPAddress().toString().split("/")[1] + "");
+//                            logRequestBody.setLogID("2019093001");
+//                            logRequestBody.setDoorID(currentUser.getBoxId() + "");
+//                            logRequestBody.setUserID(currentUser.getId() + "");
+//                            logRequestBody.setUserName(currentUser.getName());
+//                            logRequestBody.setDepsName(currentUser.getDepartment());
+//                            logRequestBody.setStatus("0");
+//                            logRequestBody.setTime(new Date().getTime());
+//                            logRequestBody.setActionUserName(currentUser.getName());
+//                            presenter.putLogRequest(logRequestBody);
+
+
+
+
+
+
+
+
+
+
+
+
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -330,13 +401,23 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 ////                                    boxService.lockControlOpenDoor(Byte.valueOf(currentBox.getBoxId() + ""), Byte.valueOf(0 + ""));
 ////                                if (currentBox.getBoxId()>20)
 ////                                    boxService.lockControlOpenDoor(Byte.valueOf((currentBox.getBoxId()-20) + ""), Byte.valueOf(15 + ""));
-                                 DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
-                                     currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+                                    currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
+                                    DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //银华开门方式
                                      DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());
                                      DbUtils.storageLog(1, new Date(), currentUser.getId());
                                      //开门指令
                                 //柜门状态改变，标记为空
                                      doorAdapter.notifyDataSetChanged();
+                                    if (currentUser!=null)
+                                    {
+                                        logRequestBody.setAccountPKId(currentUser.getId()+"");
+                                        logRequestBody.setDoorID(currentUser.getBoxId()+"");
+                                        logRequestBody.setStatus(0+"");
+                                        logRequestBody.setActionTime(new Date().getTime()+"");
+                                        logRequestBody.setActionUserId(currentUser.getId()+"");
+                                        logRequestBody.setRemark("");
+                                        presenter.putLogRequest(logRequestBody);
+                                    }
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -346,7 +427,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
                                     currentBox = DbUtils.queryBox(Long.valueOf(currentUser.getBoxId()));
                                     if (DbUtils.checkFetchStatus(new Date(), currentUser.getId()) == 1) {
                                         Toast.makeText(getApplicationContext(), "当前是工作时间", LENGTH_LONG).show();
-                                        showFetchWindow(getApplicationContext(),currentUser.getId());
+                                        showFetchWindow(getApplicationContext(),currentUser);
                                     }
                                 }catch (Exception e){
                                     Toast.makeText(getApplicationContext(), "异常错误"+e.toString(), LENGTH_LONG).show();
@@ -533,6 +614,10 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         IntentFilter dFilter = new IntentFilter();
         filter.addAction("com.chen.bOpen");
         MainActivity.this.registerReceiver(dReceiver, dFilter);
+
+
+
+
     }
 
     private void initData() {
@@ -947,7 +1032,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 
 
     //晚交手机的原因选项
-    private void showLateWindow(Context context, Long userID) {
+    private void showLateWindow(Context context, User user) {
         final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
         builder.setIcon(R.mipmap.main_setting);
         builder.setTitle("请先关闭柜门");
@@ -968,13 +1053,18 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (editSpinner.getText() != null)
-                    DbUtils.storageExceptionLog(0, new Date(), userID, editSpinner.getText());    //记录晚存
-                else if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals("") ) {
-                    DbUtils.storageExceptionLog(0, new Date(), userID, "用户未选择晚存理由");    //记录晚存
-                }
-  //              doorAdapter.notifyDataSetChanged();
+      //          if (editSpinner.getText() != null)
+                    if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals(""))
+                        DbUtils.storageExceptionLog(0, new Date(), user.getId(), "用户未选择晚存理由");    //记录晚存
+                    else if(editSpinner.getText() != null)
+                    {
+                        DbUtils.storageExceptionLog(0, new Date(), user.getId(), editSpinner.getText());    //记录晚存
+                    }
 
+                    //                else if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals("")) {
+                    //                    DbUtils.storageExceptionLog(0, new Date(), userID, "用户未选择晚存理由");    //记录晚存
+                    //                }
+                      //              doorAdapter.notifyDataSetChanged();
             }
         });
 
@@ -1000,7 +1090,7 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 
 
     //交易时间取出手机的原因选项
-    private void showFetchWindow(Context context, Long userID) {
+    private void showFetchWindow(Context context, User user) {
         final android.app.AlertDialog.Builder builderF = new android.app.AlertDialog.Builder(MainActivity.this);
         builderF.setIcon(R.mipmap.main_setting);
         builderF.setTitle("请先关闭柜门");
@@ -1020,16 +1110,20 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 DoorUtils.getSingleton().openDoor(Byte.valueOf(currentBox.getBoxId() + ""),getApplicationContext());   //汇添富开门方式
-                DbUtils.storageLogUrgent(3, new Date(),currentUser.getId(),currentUser.getName());
+                DbUtils.storageLogUrgent(3, new Date(),user.getId(),user.getName());
                 DbUtils.changeBoxStatus(0, currentBox, new Date().getTime());            //柜门状态改变，标记为非空
                 if (editSpinner.getText() != null)
-                    DbUtils.storageExceptionLog(1, new Date(), userID, editSpinner.getText());    //记录晚存
-                else if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals("")){
-                    DbUtils.storageExceptionLog(1, new Date(), userID, "未输入早取理由");    //记录晚存
+
+
+                    if (editSpinner.getText()==null||editSpinner.getText().equals(null)||editSpinner.getText().equals(""))
+                    {
+                        DbUtils.storageExceptionLog(1, new Date(), user.getId(), "未输入早取理由");    //记录晚存
+
+                    }
+                else if (editSpinner.getText() != null){
+                        DbUtils.storageExceptionLog(1, new Date(), user.getId(), editSpinner.getText());    //记录晚存
                 }
                 doorAdapter.notifyDataSetChanged();
-
-
             }
         });
         if (!isFinishing()) {
@@ -1148,7 +1242,8 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(MainActivity.this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
+                        Uri.parse("pac0016184743" +
+                                "kage:" + getPackageName()));
                 startActivityForResult(intent, 4444);
             } else {
 
@@ -1165,5 +1260,28 @@ public class MainActivity extends BaseActivity implements ILivenessCallBack, Vie
 
     }
 
+    private void forceUpdate(){
+
+             //   .updateUrl(UrlConstant.getBaseUrl(getApplicationContext())+"APPUpdate/version-info.json")
+//                  if (!isFinishing()) {
+//                      XUpdate.newBuild(MainActivity.this)
+//                              .updateUrl(UrlConstant.getBaseUrl(MainActivity.this)+"zk-web/getSoftwarePackageInfo")
+//                              .update();
+
+
+                      XUpdate.newBuild(this)
+                              .updateUrl(UrlConstant.getBaseUrl(MainActivity.this)+"zk-web/getSoftwarePackageInfo")
+                              .update();
+                  }
+
+
+
+//
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+////        forceUpdate();
+//
+//    }
 }
 

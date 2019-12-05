@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MarqueeActivity">
+<!--    <com.sunfusheng.marqueeview.MarqueeView-->
+<!--        android:id="@+id/marqueeView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:mvAnimDuration="1000"-->
+<!--        app:mvDirection="bottom_to_top"-->
+<!--        app:mvInterval="3000"-->
+<!--        app:mvTextColor="@color/white"-->
+<!--        app:mvTextSize="14sp"-->
+<!--        app:mvSingleLine="true"-->
+<!--        app:mvFont="@font/huawenxinwei"-->
+<!--        tools:ignore="MissingConstraints" />-->
+</android.support.constraint.ConstraintLayout>
